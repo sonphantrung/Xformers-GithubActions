@@ -1,0 +1,43 @@
+# References: https://github.com/CleverRaven/Cataclysm-DDA/blob/master/.github/workflows/matrix.yml
+name: Cataclysm Compiler
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+concurrency:
+  group: cataclysm-build
+  cancel-in-progress: true
+
+jobs:
+  linux-compiler:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      # - uses: actions/checkout@v3
+      - name: go to xformers
+        uses: actions/checkout@v3
+        with:
+          repository: facebookresearch/xformers
+          fetch-depth: 1
+          ref: master
+      - run: |
+          sudo apt-get update
+          sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev clang ccache
+      # - name: Install Qt
+      #   uses: jurplel/install-qt-action@v3
+      - name: Build
+        run: |
+          pip install torch torchvision triton --extra-index-url https://download.pytorch.org/whl/cu116
+          pip install -r requirements.txt
+          pip install wheel
+          pip install ninja
+          python setup.py build
+          python setup.py bdist_wheel
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: abc
+          path: ./*.whl
+          # path: ./object-creator.zip
