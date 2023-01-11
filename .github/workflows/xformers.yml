@@ -1,5 +1,4 @@
-# References: https://github.com/CleverRaven/Cataclysm-DDA/blob/master/.github/workflows/matrix.yml
-name: Cataclysm Compiler
+name: Xformers Compiler
 
 on:
   push:
@@ -7,7 +6,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: cataclysm-build
+  group: xformers-build
   cancel-in-progress: true
 
 jobs:
@@ -21,19 +20,23 @@ jobs:
         with:
           repository: facebookresearch/xformers
           submodules: recursive
-          ref: main      
+          ref: main
       - run: |
           sudo apt-get update
       - name: Build
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.1' 
         run: |
           pip install torch torchvision triton --extra-index-url https://download.pytorch.org/whl/cu116
           pip install -r requirements.txt
           pip install wheel
           pip install ninja
-          pip wheel git+https://github.com/facebookresearch/xformers#egg=xformers
+          python setup.py build
+          python setup.py bdist_wheel
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: abc
-          path: ./*.whl
+          path: ./dist/*.whl
           # path: ./object-creator.zip
