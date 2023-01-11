@@ -21,7 +21,7 @@ jobs:
         with:
           repository: facebookresearch/xformers
           submodules: recursive
-          ref: master
+          ref: main
       - run: |
           sudo apt-get update
       - name: Build
