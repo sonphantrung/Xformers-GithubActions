@@ -39,4 +39,3 @@ jobs:
         with:
           name: abc
           path: ./dist/*.whl
-          # path: ./object-creator.zip
