@@ -36,5 +36,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: abc
-          path: ./*.whl
+          path: ./dist/*.whl
           # path: ./object-creator.zip
