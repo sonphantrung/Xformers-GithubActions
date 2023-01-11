@@ -16,7 +16,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # - uses: actions/checkout@v3
-      - name: update
+      - name: go to xformers
+        uses: actions/checkout@v3
+        with:
+          repository: facebookresearch/xformers
+          submodules: recursive
+          ref: main      
       - run: |
           sudo apt-get update
       - name: Build
