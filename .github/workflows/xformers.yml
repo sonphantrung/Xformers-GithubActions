@@ -16,12 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # - uses: actions/checkout@v3
-      - name: go to xformers
-        uses: actions/checkout@v3
-        with:
-          repository: facebookresearch/xformers
-          submodules: recursive
-          ref: main
+      - name: update
       - run: |
           sudo apt-get update
       - name: Build
@@ -30,11 +25,10 @@ jobs:
           pip install -r requirements.txt
           pip install wheel
           pip install ninja
-          python setup.py build
-          python setup.py bdist_wheel
+          pip wheel git+https://github.com/facebookresearch/xformers#egg=xformers
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: abc
-          path: ./dist/*.whl
+          path: ./*.whl
           # path: ./object-creator.zip
