@@ -23,12 +23,11 @@ jobs:
           ref: main
       - run: |
           sudo apt-get update
-      - name: (Linux) install cuda
-        run: |
-          wget -q https://developer.download.nvidia.com/compute/cuda/11.6.2/local_installers/cuda_11.6.2_510.47.03_linux.run
-          chmod +x ./cuda_11.6.2_510.47.03_linux.run
-          sudo sh ./cuda_11.6.2_510.47.03_linux.run --toolkit
-          rm ./cuda_11.6.2_510.47.03_linux.run
+      - name: install cuda
+        uses: Jimver/cuda-toolkit@v0.2.8
+        with:
+          cuda: '11.6.0'
+          linux-local-args: '["--toolkit"]'
       - name: Build
         uses: actions/setup-python@v4
         with:
