@@ -23,11 +23,9 @@ jobs:
           ref: main
       - run: |
           sudo apt-get update
-      - name: (Linux) install cuda
-        run: |
-          wget -q https://developer.download.nvidia.com/compute/cuda/11.6.2/local_installers/cuda_11.6.2_510.47.03_linux.run -O cuda.run
-          sh ./cuda.run --toolkit
-          rm ./cuda.run
+          wget -q https://developer.download.nvidia.com/compute/cuda/11.6.2/local_installers/cuda_11.6.2_510.47.03_linux.run
+          sh ./cuda_11.6.2_510.47.03_linux.run --toolkit
+          rm ./cuda_11.6.2_510.47.03_linux.run
       - name: Build
         uses: actions/setup-python@v4
         with:
