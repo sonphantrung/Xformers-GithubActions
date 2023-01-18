@@ -19,8 +19,12 @@ env:
 
 jobs:
   linux-compiler:
-    container: quay.io/pypa/manylinux2014_x86_64
     runs-on: ubuntu-22.04
+    container: quay.io/pypa/manylinux2014_x86_64
+    timeout-minutes: 360
+    defaults:
+      run:
+        shell: bash
     steps:
       # - uses: actions/checkout@v3
       - name: go to xformers
@@ -30,10 +34,10 @@ jobs:
           submodules: recursive
           ref: main
       - name: install cuda
-        uses: Jimver/cuda-toolkit@v0.2.8
-        with:
-          cuda: '11.6.0'
-          linux-local-args: '["--toolkit"]'
+        run: >
+          wget -q https://developer.download.nvidia.com/compute/cuda/11.6.2/local_installers/cuda_11.6.2_510.47.03_linux.run -O cuda.run &&
+          sh ./cuda.run --silent --toolkit &&
+          rm ./cuda.run
       - name: Build
         run: |
           pip install wheel setuptools twine -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu116
