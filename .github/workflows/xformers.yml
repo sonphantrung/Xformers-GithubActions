@@ -40,9 +40,8 @@ jobs:
         with:
           python-version: '3.10' 
       - run: |
-          pip install wheel setuptools twine --extra-index-url https://download.pytorch.org/whl/cu116
+          pip install wheel setuptools twine torch torchvision triton --extra-index-url https://download.pytorch.org/whl/cu116
           pip install -r requirements.txt
-          pip install ninja
           python setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
