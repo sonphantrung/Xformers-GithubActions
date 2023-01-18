@@ -28,8 +28,6 @@ jobs:
           repository: facebookresearch/xformers
           submodules: recursive
           ref: main
-      - run: |
-          sudo apt-get update
       - name: install cuda
         uses: Jimver/cuda-toolkit@v0.2.8
         with:
