@@ -37,7 +37,7 @@ jobs:
           pip install -r requirements.txt
           pip install wheel
           pip install ninja
-          python setup.py bdist_wheel
+          python setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
