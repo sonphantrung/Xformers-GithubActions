@@ -35,7 +35,7 @@ jobs:
         with:
           cuda: '11.6.0'
           linux-local-args: '["--toolkit"]'
-      - run: |
+        run: |
           pip install wheel setuptools twine -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu116
           pip install ninja
           python setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
