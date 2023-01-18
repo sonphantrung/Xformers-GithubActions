@@ -35,6 +35,7 @@ jobs:
         with:
           cuda: '11.6.0'
           linux-local-args: '["--toolkit"]'
+      - name: Build
         run: |
           pip install wheel setuptools twine -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu116
           pip install ninja
