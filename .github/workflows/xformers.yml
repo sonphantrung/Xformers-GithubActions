@@ -15,11 +15,11 @@ env:
   FORCE_CUDA: 1
   MAX_JOBS: 1 # will crash otherwise
   DISTUTILS_USE_SDK: 1 # otherwise distutils will complain on windows about multiple versions of msvc
+  XFORMERS_PACKAGE_FROM: "wheel-${{ github.ref_name }}
 
 jobs:
   linux-compiler:
-    continue-on-error: true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       # - uses: actions/checkout@v3
       - name: go to xformers
@@ -36,10 +36,7 @@ jobs:
           cuda: '11.6.0'
           linux-local-args: '["--toolkit"]'
       - name: Build
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10' 
-      - run: |
+        run: |
           pip install wheel setuptools twine -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu116
           pip install ninja
           python setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
