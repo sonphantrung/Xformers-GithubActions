@@ -29,6 +29,8 @@ jobs:
           repository: facebookresearch/xformers
           submodules: recursive
           ref: main
+          path: "."
+          fetch-depth: 0
       - name: install cuda
         run: >
           yum install wget git prename -y &&
