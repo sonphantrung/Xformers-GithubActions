@@ -44,7 +44,7 @@ jobs:
           set -Eeuo pipefail
           git config --global --add safe.directory "*"
           python3.10 -m pip install packaging
-          version=`python3.10 packaging/compute_wheel_version.py
+          version=`python3.10 packaging/compute_wheel_version.py`
           echo "BUILD_VERSION=$version" >> ${GITHUB_ENV}
           cat ${GITHUB_ENV}
       - name: Build
