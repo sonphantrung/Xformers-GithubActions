@@ -62,5 +62,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: abc
+          name: xformerstorch2-${{matrix.config.cuda_version}}
           path: ./dist/*.whl
