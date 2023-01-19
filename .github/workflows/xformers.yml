@@ -39,7 +39,7 @@ jobs:
           rm ./cuda.run
       - name: Define version
         run: |
-          set -Eeuo pipefall
+          set -Eeuo pipefail
           git config --global --add safe.directory "*"
           python3.10 -m pip install packaging
           version=`python3.10 packaging/compute_wheel_version.py
