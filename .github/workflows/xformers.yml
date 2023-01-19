@@ -3,7 +3,7 @@ name: Xformers Compiler
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch:
+  workflow_dispatch: {}
   
 env:
   # you need at least cuda 5.0 for some of the stuff compiled here.
@@ -37,6 +37,14 @@ jobs:
           wget -q https://developer.download.nvidia.com/compute/cuda/11.6.2/local_installers/cuda_11.6.2_510.47.03_linux.run -O cuda.run &&
           sh ./cuda.run --silent --toolkit &&
           rm ./cuda.run
+      - name: Define version
+        run: |
+          set -Eeuo pipefall
+          git config --global --add safe.directory "*"
+          python3.10 -m pip install packaging
+          version=`python3.10 packaging/compute_wheel_version.py
+          echo "BUILD_VERSION=$version" >> ${GITHUB_ENV}
+          cat ${GITHUB_ENV}
       - name: Build
         run: |
           python3.10 -m pip install wheel setuptools twine ninja -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu116
