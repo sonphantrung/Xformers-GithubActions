@@ -57,7 +57,10 @@ jobs:
           cat ${GITHUB_ENV}
       - name: Build
         run: |
-          python3.10 -m pip install wheel setuptools twine ninja -r requirements.txt --extra-index-url ${{ matrix.config.pip_index }}
+          python3.10 -m pip install wheel setuptools twine ninja
+          python3.10 -m pip install --pre torch torchvision torchaudio triton --extra-index-url ${{ matrix.config.pip_index }} --force
+          python3.10 -m pip install -r requirements.txt
+          python3.10 -m pip install -U accelerate==0.15.0
           python3.10 setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
