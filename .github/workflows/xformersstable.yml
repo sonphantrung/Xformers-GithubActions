@@ -1,0 +1,58 @@
+name: Xformers Compiler (Stable)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+  
+env:
+  # you need at least cuda 5.0 for some of the stuff compiled here.
+  TORCH_CUDA_ARCH_LIST: "6.0 7.5"
+  FORCE_CUDA: 1
+  MAX_JOBS: 1 # will crash otherwise
+  DISTUTILS_USE_SDK: 1 # otherwise distutils will complain on windows about multiple versions of msvc
+  XFORMERS_PACKAGE_FROM: "wheel-${{ github.ref_name }}"
+
+jobs:
+  xf-compiler:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-22.04
+    container: quay.io/pypa/manylinux2014_x86_64
+    timeout-minutes: 360
+    defaults:
+      run:
+        shell: bash
+    steps:
+      # - uses: actions/checkout@v3
+      - name: go to xformers
+        uses: actions/checkout@v3
+        with:
+          repository: facebookresearch/xformers
+          submodules: recursive
+          ref: main
+          path: "."
+          fetch-depth: 0
+      - name: install cuda
+        run: >
+          yum install wget git prename -y &&
+          wget -q https://developer.download.nvidia.com/compute/cuda/11.6.2/local_installers/cuda_11.6.2_510.47.03_linux.run -O cuda.run &&
+          sh ./cuda.run --silent --toolkit &&
+          rm ./cuda.run
+      - name: Define version
+        run: |
+          set -Eeuo pipefail
+          git config --global --add safe.directory "*"
+          python3.10 -m pip install packaging
+          version=`python3.10 packaging/compute_wheel_version.py`
+          echo "BUILD_VERSION=$version" >> ${GITHUB_ENV}
+          cat ${GITHUB_ENV}
+      - name: Build
+        run: |
+          python3.10 -m pip install wheel setuptools twine ninja -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu116
+          python3.10 setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: abc
+          path: ./dist/*.whl
