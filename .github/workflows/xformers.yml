@@ -60,10 +60,7 @@ jobs:
           python3.10 -m pip install wheel setuptools twine ninja -r requirements.txt --extra-index-url ${{ matrix.config.pip_index }}
           python3.10 setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
       - name: Upload artifacts
-        uses: marvinpinto/action-automatic-releases@latest
+        uses: actions/upload-artifact@v3
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Xformers Build, with torch2"          
-          files: ./dist/*.whl
+          name: xformerstorch2-${{matrix.config.cuda_version}}
+          path: ./dist/*.whl
