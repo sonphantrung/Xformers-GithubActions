@@ -67,8 +67,11 @@ jobs:
           python${{matrix.python}} -m pip install -r requirements.txt
           python${{matrix.python}} -m pip install -U accelerate==0.15.0
           python${{matrix.python}} setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: xformerstorch2-${{matrix.python}}-${{matrix.config.cuda_version}}
-          path: ./dist/*.whl
+          repo_token: ${{secrets.GITHUB_TOKEN}}
+          file: ./dist/*.whl
+          tag: ${{github.ref}}
+          file_glob: true
+          overwrite: true
