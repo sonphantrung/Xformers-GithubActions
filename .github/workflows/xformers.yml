@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        token: ${{secrets.GITHUB_TOKEN}}
+        token: "${{secrets.GITHUB_TOKEN}}"
         python:
           - "3.10"
           - "3.9"
