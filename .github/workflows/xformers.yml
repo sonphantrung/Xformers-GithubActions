@@ -18,7 +18,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        token: "${{secrets.GITHUB_TOKEN}}"
         python:
           - "3.10"
           - "3.9"
@@ -71,7 +70,6 @@ jobs:
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: ${{matrix.token}}
           file: ./dist/*.whl
           tag: ${{github.ref}}
           file_glob: true
