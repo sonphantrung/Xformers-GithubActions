@@ -17,6 +17,19 @@ jobs:
   xf-compiler:
     strategy:
       fail-fast: false
+      matrix:
+        python:
+          - "3.10"
+          - "3.9"
+          - "3.8"
+          - "3.7"
+        config:
+          - cuda_version: "11.7.1"
+            pip_index: https://download.pytorch.org/whl/cu117
+            cuda_run_file: https://developer.download.nvidia.com/compute/cuda/11.7.1/local_installers/cuda_11.7.1_515.65.01_linux.run
+          - cuda_version: "11.6.2"
+            pip_index: https://download.pytorch.org/whl/cu116
+            cuda_run_file: https://developer.download.nvidia.com/compute/cuda/11.6.2/local_installers/cuda_11.6.2_510.47.03_linux.run
     runs-on: ubuntu-22.04
     container: quay.io/pypa/manylinux2014_x86_64
     timeout-minutes: 360
@@ -33,26 +46,33 @@ jobs:
           ref: main
           path: "."
           fetch-depth: 0
+      - name: get vars
+        id: get-vars
+        run: |
+          echo "datetime=$(/bin/date -u +"%Y%m%d%H%M")" >>$GITHUB_OUTPUT
       - name: install cuda
         run: >
           yum install wget git prename -y &&
-          wget -q https://developer.download.nvidia.com/compute/cuda/11.6.2/local_installers/cuda_11.6.2_510.47.03_linux.run -O cuda.run &&
+          wget -q "${{matrix.config.cuda_run_file}}" -O cuda.run &&
           sh ./cuda.run --silent --toolkit &&
           rm ./cuda.run
       - name: Define version
         run: |
           set -Eeuo pipefail
           git config --global --add safe.directory "*"
-          python3.10 -m pip install packaging
-          version=`python3.10 packaging/compute_wheel_version.py`
+          python${{matrix.python}} -m pip install packaging
+          version=`python${{matrix.python}} packaging/compute_wheel_version.py`
           echo "BUILD_VERSION=$version" >> ${GITHUB_ENV}
           cat ${GITHUB_ENV}
       - name: Build
         run: |
-          python3.10 -m pip install wheel setuptools twine ninja -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu116
-          python3.10 setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+          python${{matrix.python}} -m pip install wheel setuptools twine ninja torch torchvision torchaudio triton --extra-index-url ${{matrix.config.pip_index}}
+          python${{matrix.python}} setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: abc
-          path: ./dist/*.whl
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./dist/*.whl
+          tag: xformersstable-${{matrix.config.cuda_version}}-${{steps.get-vars.outputs.datetime}}
+          file_glob: true
+          overwrite: true
