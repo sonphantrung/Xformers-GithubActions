@@ -7,7 +7,7 @@ on:
   
 env:
   # you need at least cuda 5.0 for some of the stuff compiled here.
-  TORCH_CUDA_ARCH_LIST: "5.2+PTX 6.0 7.5"
+  TORCH_CUDA_ARCH_LIST: "5.0+PTX 5.2+PTX 6.0 6.1 7.0 7.5 8.0 8.6"
   FORCE_CUDA: 1
   MAX_JOBS: 1 # will crash otherwise
   DISTUTILS_USE_SDK: 1 # otherwise distutils will complain on windows about multiple versions of msvc
@@ -49,7 +49,7 @@ jobs:
       - name: get vars
         id: get-vars
         run: |
-          echo "datetime=$(/bin/date -u +"%Y%m%d%H%M")" >>$GITHUB_OUTPUT
+          echo "datetime=$(/bin/date -u +"%Y/%m/%d")" >>$GITHUB_OUTPUT
         shell: bash
       - name: install cuda
         run: >
@@ -77,7 +77,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./dist/*.whl
-          tag: xformers-${{matrix.config.cuda_version}}-${{steps.get-vars.outputs.datetime}}
+          tag: xformers-cu${{matrix.config.cuda_version}}-${{steps.get-vars.outputs.datetime}}
           file_glob: true
           overwrite: true
           prerelease: true

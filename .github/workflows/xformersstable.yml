@@ -49,7 +49,7 @@ jobs:
       - name: get vars
         id: get-vars
         run: |
-          echo "datetime=$(/bin/date -u +"%Y%m%d")" >>$GITHUB_OUTPUT
+          echo "datetime=$(/bin/date -u +"%Y/%m/%d")" >>$GITHUB_OUTPUT
       - name: install cuda
         run: >
           yum install wget git prename -y &&
