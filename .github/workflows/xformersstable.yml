@@ -7,7 +7,7 @@ on:
   
 env:
   # you need at least cuda 5.0 for some of the stuff compiled here.
-  TORCH_CUDA_ARCH_LIST: "5.0+PTX 5.2+PTX "
+  TORCH_CUDA_ARCH_LIST: "5.2+PTX"
   FORCE_CUDA: 1
   MAX_JOBS: 1 # will crash otherwise
   DISTUTILS_USE_SDK: 1 # otherwise distutils will complain on windows about multiple versions of msvc
@@ -69,7 +69,7 @@ jobs:
           python${{matrix.python}} -m pip install wheel setuptools twine ninja torch torchvision torchaudio triton --extra-index-url ${{matrix.config.pip_index}}
           python${{matrix.python}} setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
       - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2.5.0
+        uses: svenstaro/upload-release-action@2.5.0
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./dist/*.whl
