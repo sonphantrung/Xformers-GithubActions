@@ -45,11 +45,6 @@ jobs:
           ref: main
           path: "."
           fetch-depth: 0
-      - name: get vars
-        id: get-vars
-        run: |
-          echo "datetime=$(/bin/date -u +"%Y/%m/%d")" >>$GITHUB_OUTPUT
-        shell: bash
       - name: install cuda
         run: >
           yum install wget git prename -y &&
@@ -66,17 +61,25 @@ jobs:
           cat ${GITHUB_ENV}
       - name: Build
         run: |
-          python${{matrix.python}} -m pip install wheel setuptools twine ninja
+          python${{matrix.python}} -m pip install wheel setuptools
           python${{matrix.python}} -m pip install --pre torch torchvision torchaudio triton --extra-index-url ${{ matrix.config.pip_index }} --force
           python${{matrix.python}} -m pip install -r requirements.txt
           python${{matrix.python}} -m pip install -U accelerate==0.15.0
           python${{matrix.python}} setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
+      - name: get vars
+        shell: bash
+        id: get-vars
+        run: |
+          echo "datetime=$(/bin/date -u +"%Y/%m/%d")" >>$GITHUB_OUTPUT
+          echo "releasebody=$(echo "for use with $(pip freeze | grep torch)") >> $GITHUB_OUTPUT
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@2.5.0
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./dist/*.whl
           tag: xformers-cu${{matrix.config.cuda_version}}-${{steps.get-vars.outputs.datetime}}
+          body: |
+            ${{ steps.get-vars.outputs.releasebody }}
           file_glob: true
           overwrite: true
           prerelease: true
