@@ -64,12 +64,11 @@ jobs:
           python${{matrix.python}} -m pip install wheel setuptools
           python${{matrix.python}} -m pip install --pre torch torchvision torchaudio triton --extra-index-url ${{ matrix.config.pip_index }} --force
           python${{matrix.python}} -m pip install -r requirements.txt
-          python${{matrix.python}} -m pip install -U accelerate==0.15.0
           python${{matrix.python}} setup.py bdist_wheel -d dist/ -k --plat-name manylinux2014_x86_64
       - name: get vars
         id: get-vars
         run: |
-          echo "datetime=$(/bin/date -u +"%Y/%m/%d%H:%M")" >>$GITHUB_OUTPUT
+          echo "datetime=$(/bin/date -u +"%Y/%m/%d/%H%M")" >> $GITHUB_OUTPUT
           echo "releasebody=$(echo "for use with $(pip freeze | grep torch)")" >> $GITHUB_OUTPUT
         shell: bash
       - name: Upload binaries to release
@@ -78,8 +77,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./dist/*.whl
           tag: xformers-cu${{matrix.config.cuda_version}}-${{steps.get-vars.outputs.datetime}}
-          body: |
-            ${{ steps.get-vars.outputs.releasebody }}
+          body: ${{ steps.get-vars.outputs.releasebody }}
           file_glob: true
           overwrite: true
           prerelease: true
