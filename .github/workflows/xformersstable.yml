@@ -7,7 +7,7 @@ on:
   
 env:
   # you need at least cuda 5.0 for some of the stuff compiled here.
-  TORCH_CUDA_ARCH_LIST: "5.2+PTX"
+  TORCH_CUDA_ARCH_LIST: "5.0+PTX 5.2+PTX 6.0 6.1 7.0 7.5 8.0 8.6"
   FORCE_CUDA: 1
   MAX_JOBS: 1 # will crash otherwise
   DISTUTILS_USE_SDK: 1 # otherwise distutils will complain on windows about multiple versions of msvc
@@ -24,6 +24,9 @@ jobs:
           - "3.8"
           - "3.7"
         config:
+          - cuda_version: "11.8.0"
+            pip_index: https://download.pytorch.org/whl/cu118
+            cuda_run_file: https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
           - cuda_version: "11.7.1"
             pip_index: https://download.pytorch.org/whl/cu117
             cuda_run_file: https://developer.download.nvidia.com/compute/cuda/11.7.1/local_installers/cuda_11.7.1_515.65.01_linux.run

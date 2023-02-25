@@ -23,6 +23,9 @@ jobs:
           - "3.9"
           - "3.8"
         config:
+          - cuda_version: "11.8.0"
+            pip_index: https://download.pytorch.org/whl/nightly/cu118
+            cuda_run_file: https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
           - cuda_version: "11.7.1"
             pip_index: https://download.pytorch.org/whl/nightly/cu117
             cuda_run_file: https://developer.download.nvidia.com/compute/cuda/11.7.1/local_installers/cuda_11.7.1_515.65.01_linux.run
@@ -59,6 +62,10 @@ jobs:
           version=`python${{matrix.python}} packaging/compute_wheel_version.py`
           echo "BUILD_VERSION=$version" >> ${GITHUB_ENV}
           cat ${GITHUB_ENV}
+      - name: get datetime vars
+        id: datetime-vars
+        run: |
+          echo "datetime=$(/bin/date -u +"%Y/%m/%d/%H%M")" >> $GITHUB_OUTPUT
       - name: Build
         run: |
           python${{matrix.python}} -m pip install wheel setuptools
@@ -68,15 +75,14 @@ jobs:
       - name: get vars
         id: get-vars
         run: |
-          echo "datetime=$(/bin/date -u +"%Y/%m/%d/%H%M")" >> $GITHUB_OUTPUT
-          echo "releasebody=$(echo "for use with $(pip freeze | grep torch)")" >> $GITHUB_OUTPUT
+          echo "releasebody=$(pip freeze | grep torch)" >> $GITHUB_OUTPUT
         shell: bash
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@2.5.0
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./dist/*.whl
-          tag: xformers-cu${{matrix.config.cuda_version}}-${{steps.get-vars.outputs.datetime}}
+          tag: xformers-cuda${{matrix.config.cuda_version}}-${{steps.datetime-vars.outputs.datetime}}
           body: ${{ steps.get-vars.outputs.releasebody }}
           file_glob: true
           overwrite: true
